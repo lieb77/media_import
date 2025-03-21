@@ -1,0 +1,3 @@
+# Schema definition for select filter.
+views.filter.node_index_nid:
+  type: views.filter.in_operator

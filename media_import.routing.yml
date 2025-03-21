@@ -1,0 +1,15 @@
+media_import.tour:
+  path: 'admin/media/import/tour'
+  defaults:
+    _title: 'Media Import'
+    _form: 'Drupal\media_import\Form\TourMediaForm'
+  requirements:
+    _permission: 'import media'
+
+media_import.family:
+  path: 'admin/media/import/family'
+  defaults:
+    _title: 'Media Import'
+    _form: 'Drupal\media_import\Form\FamilyMediaForm'
+  requirements:
+    _permission: 'import media'

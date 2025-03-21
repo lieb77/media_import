@@ -1,0 +1,21 @@
+{
+    "name": "lieb/media_import",
+    "description": "Media utility",
+    "type": "drupal-module",
+    "license": "GPL-2.0+",
+    "autoload": {
+        "psr-4": {
+            "Lieb\\MediaImport\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Paul Lieberman",
+            "email": "lieb@orchardware.net"
+        }
+    ],
+    "minimum-stability": "dev",
+    "require": {
+    	"php": ">=8.3"
+    }
+}

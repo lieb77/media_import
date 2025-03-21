@@ -1,0 +1,17 @@
+media_import.admin:
+  title: 'Pictures'
+  description: 'Picture administration'
+  parent: system.admin_content
+  route_name: media_import.tour
+
+media_import.import:
+  title: 'Import images for Tour'
+  description: 'Add media to tours'
+  parent: media_import.admin
+  route_name: media_import.tour
+
+media_import.family:
+  title: 'Import family pictures'
+  description: 'Add medias'
+  parent: media_import.admin
+  route_name: media_import.family

@@ -1,0 +1,10 @@
+services:
+
+  media_import.family:
+    class: Drupal\media_import\FamilyEvents
+    arguments: ['@entity_type.manager']
+
+
+  Drupal\media_import\Hook\MediaImportHooks:
+    class: Drupal\media_import\Hook\MediaImportHooks
+    autowire: true

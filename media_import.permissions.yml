@@ -1,0 +1,3 @@
+import media:
+  title: 'Import media'
+  restrict access: true

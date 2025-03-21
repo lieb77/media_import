@@ -1,0 +1,8 @@
+name: 'Media Import'
+type: module
+description: Import media and associate with various teaxonpomy terms'
+package: Custom
+core_version_requirement: ^10 || ^11
+version: 1.0.0
+dependencies:
+  - drupal:media
