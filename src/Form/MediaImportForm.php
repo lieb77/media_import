@@ -21,6 +21,9 @@ final class MediaImportForm extends FormBase {
 
 	protected $step = 1;
 	protected $path;
+	protected $category;
+	protected $event;
+	protected $tour;
 	
 	
 	/**
@@ -86,7 +89,10 @@ final class MediaImportForm extends FormBase {
 			
 			$form['intro'] = [
 				'#type'  => 'item',
-				'#markup' => $this->t("<p>This form will import existing image files as media and tag them with a category.</p>"),
+				'#markup' => $this->t(
+					"<p>This form will import existing image files as media and tag them with a category.</p>" .
+					"<p>Family photos will be tagged with an event</p>" .
+					"<p>Bicycle tour photos will be attached to a Tour</p>"	),
 			];
 			
 			// Text field to get the directory path
@@ -105,8 +111,7 @@ final class MediaImportForm extends FormBase {
 				'#type'  => 'select',
 				'#title' => $this->t("Select an existing category"),
 				'#options' => $categories,
-				'#description' => $this->t("Select a category name you would like assigned to these photos."),
-				
+				'#description' => $this->t("Select a category name you would like assigned to these photos."),				
 				'#attributes' => ['id' => 'categories'],
 			];
 		
@@ -121,13 +126,14 @@ final class MediaImportForm extends FormBase {
 				'#states' => [
 					// Show this textfield only if the category 'family' is selected above.
 					'visible' => [
+						// This uses a jQuery selector. 
 						':input[name="categories"]' => ['value' => '999'],
 					],
 				],			
 			];
 							
 			// Dropdown to select existing event
-			$events['999'] = "Create new event";
+			$events['999'] = "New event";
 			$form['events'] = [
 				'#type'  => 'select',
 				'#title' => $this->t("Select a family event"),
@@ -137,10 +143,7 @@ final class MediaImportForm extends FormBase {
 				'#states' => [
 					// Show this textfield only if the category 'family' is selected above.
 					'visible' => [
-						// Don't mistake :input for the type of field or for a css selector --
-						// it's a jQuery selector. 
-						// You can always use :input or any other jQuery selector here, no matter 
-						// whether your source is a select, radio or checkbox element.
+						// This uses a jQuery selector. 
 						':input[name="categories"]' => ['value' => '12'],
 					],
 				],														
@@ -157,6 +160,7 @@ final class MediaImportForm extends FormBase {
 					// Show this textfield only if the category 'family' is selected above.
 					'visible' => [
 						':input[name="events"]' => ['value' => '999'],
+						':input[name="categories"]' => ['value' => '12'],
 					],
 				],														
 
@@ -200,11 +204,6 @@ final class MediaImportForm extends FormBase {
 	public function validateForm(array &$form, FormStateInterface $form_state): void {
 		if ($this->step == 1) {
 		
-			// See if we have a new category, else uses the selected events
-		    // And stash it for later
-		  	$this->category = (! empty($form_state->getValue('category'))) ?
-				trim($form_state->getValue('category')) : $form_state->getValue('categories');
-		
 			// Confirm the directory exists
 		  	$path = trim($form_state->getValue('media'));
 		  			  	
@@ -214,7 +213,29 @@ final class MediaImportForm extends FormBase {
 		  	
 		  	// Save directory path
 			$this->path = $path;
+		
+			// See if we have a new category, else uses the selected category
+		    // And stash it for later
+		  	$this->category = (! empty($form_state->getValue('category'))) ?
+				trim($form_state->getValue('category')) : $form_state->getValue('categories');
+	
+			// See if we have Family pictures
+			if ($this->category == 12) {
+				// See if we have a new event, else uses the selected events
+				// And stash it for later
+				$this->event = (! empty($form_state->getValue('event'))) ?
+					trim($form_state->getValue('event')) : $form_state->getValue('events');
+			}	
+			
+			// See if we have Tour pictures
+			if ($this->category == 71) {				
+				// And stash it for later
+				$this->tour = $form_state->getValue('tours');
+			}	
+			
+					
 		}
+		// We don't have to validate anything for step 2
 	}
 
 	/**
@@ -227,8 +248,11 @@ final class MediaImportForm extends FormBase {
     	}
     	else {
     	
-			$this->importer->importMedia($this->category);
-    
+	    	dpm([$this->path, $this->category, $this->event, $this->tour]);
+			// $this->importer->importMedia($this->category);
+  // 			$form_state->setRebuild();
+
+/*    
       		// Redirect to media
      	 	$path = '/admin/content/media';
 
@@ -238,6 +262,8 @@ final class MediaImportForm extends FormBase {
 			$route_parameters = $url_object->getrouteParameters();
 			
 			$form_state->setRedirect($route_name, $route_parameters);
+
+*/
 		}
 	}
 
