@@ -82,6 +82,7 @@ final class MediaImportForm extends FormBase {
 		else {
 			$categories = $this->categories->getCategories();
 			$events     = $this->categories->getEvents();
+			$tours      = $this->categories->getTours();
 			
 			$form['intro'] = [
 				'#type'  => 'item',
@@ -98,7 +99,8 @@ final class MediaImportForm extends FormBase {
 				'#description' => $this->t("Enter the directory which contains the images, relative to sites/default/files/"),
 			];
 			
-			// Dropdown to select existing event
+			// Dropdown to select existing category
+			$categories['999'] = "New category";
 			$form['categories'] = [
 				'#type'  => 'select',
 				'#title' => $this->t("Select an existing category"),
@@ -108,37 +110,76 @@ final class MediaImportForm extends FormBase {
 				'#attributes' => ['id' => 'categories'],
 			];
 		
+			
+			// Text field to get the category name
+			$form['category'] = [
+				'#type'  => 'textfield',
+				'#title' => $this->t('Create a new category'),
+				'#size' => 60,
+				'#maxlength' => 128,
+				'#description' => $this->t("Or enter a new category name you would like assigned to these photos."),
+				'#states' => [
+					// Show this textfield only if the category 'family' is selected above.
+					'visible' => [
+						':input[name="categories"]' => ['value' => '999'],
+					],
+				],			
+			];
+							
+			// Dropdown to select existing event
+			$events['999'] = "Create new event";
 			$form['events'] = [
 				'#type'  => 'select',
-				'#title' => $this->t("Select an event"),
+				'#title' => $this->t("Select a family event"),
 				'#options' => $events,
 				'#description' => $this->t("Select event name you would like assigned to these photos."),
 				'#attributes' => ['id' => 'events'],
 				'#states' => [
 					// Show this textfield only if the category 'family' is selected above.
 					'visible' => [
-						  // Don't mistake :input for the type of field or for a css selector --
-						  // it's a jQuery selector. 
-						  // You can always use :input or any other jQuery selector here, no matter 
-						  // whether your source is a select, radio or checkbox element.
-						  // in case of radio buttons we can select them by their name instead of id.
-						  ':input[name="categories"]' => ['value' => '12'],
-						],
+						// Don't mistake :input for the type of field or for a css selector --
+						// it's a jQuery selector. 
+						// You can always use :input or any other jQuery selector here, no matter 
+						// whether your source is a select, radio or checkbox element.
+						':input[name="categories"]' => ['value' => '12'],
+					],
+				],														
+			];
+			
+			// Text field to get a new event name
+			$form['event'] = [
+				'#type'  => 'textfield',
+				'#title' => $this->t('Create a new event'),
+				'#size' => 60,
+				'#maxlength' => 128,
+				'#description' => $this->t("Or enter a new event name you would like assigned to these photos."),
+				'#states' => [
+					// Show this textfield only if the category 'family' is selected above.
+					'visible' => [
+						':input[name="events"]' => ['value' => '999'],
+					],
+				],														
+
+			];
+			
+			
+
+			$form['tours'] = [
+				'#type'  => 'select',
+				'#title' => $this->t("Select a tour"),
+				'#options' => $tours,
+				'#description' => $this->t("Select a tour you would like assigned to these photos."),
+				'#attributes' => ['id' => 'tours'],
+				'#states' => [
+					// Show this textfield only if the category 'Tour' is selected above.
+					'visible' => [
+						':input[name="categories"]' => ['value' => '71'],
+					],
 				],														
 			];
 
-			
-/*			
-			// Text field to get the category name
-			$form['category'] = [
-				'#type'  => 'textfield',
-				'#title' => $this->t('Or create a new category'),
-				'#size' => 60,
-				'#maxlength' => 128,
-				'#description' => $this->t("Or enter a new category name you would like assigned to these photos."),
-			];
-			
-*/			
+
+	
 			$form['actions'] = [
 				'#type' => 'actions',
 				'submit' => [

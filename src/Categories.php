@@ -4,6 +4,7 @@ namespace Drupal\media_import;
 
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\taxonomy\Entity\Term;
+use Drupal\node\Entity\Node;
 
 class Categories {
 
@@ -58,9 +59,26 @@ class Categories {
 		
 		return $events;		
 	}
-
-
-
+	
+	/**
+	 * Get the list of Tours
+	 *
+	 */
+	public function getTours() {
+	
+		$ids = $this->entityTypeManager->getStorage('node')->getQuery()
+			->condition('type', 'tour')
+			->accessCheck('TRUE')
+			->sort('field_start_date')
+			->execute();
+	
+		foreach ($ids as $tid) {
+		  $tname = Node::load($tid)->getTitle();
+		  $tours[$tid] = $tname;
+		}
+	
+		return $tours;
+	}
 
 // End of Class
 }
