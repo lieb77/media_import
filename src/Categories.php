@@ -36,5 +36,31 @@ class Categories {
 		return $categories;
 	}
 
+	/**
+     * Get list of Family Events
+     *
+     */
+	public function getEvents() {
+    
+		// Get the events vocabulary
+		$vocabulary = $this->entityTypeManager->getStorage('taxonomy_vocabulary')->load('event');
+		
+		// Get the events terms
+		$tids = $this->entityTypeManager->getStorage('taxonomy_term')->getQuery()
+			->condition('vid', $vocabulary->id())
+			->accessCheck(TRUE)
+			->execute();
+		
+		foreach ($tids as $tid) {
+		  	$tname = Term::load($tid)->getName();
+		  	$events[$tid] = $tname;
+		}
+		
+		return $events;		
+	}
+
+
+
+
 // End of Class
 }
