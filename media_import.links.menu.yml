@@ -5,13 +5,7 @@ media_import.admin:
   route_name: media_import.tour
 
 media_import.import:
-  title: 'Import images for Tour'
-  description: 'Add media to tours'
+  title: 'Import images as Media'
+  description: 'Add media from images on disk and apply categories'
   parent: media_import.admin
-  route_name: media_import.tour
-
-media_import.family:
-  title: 'Import family pictures'
-  description: 'Add medias'
-  parent: media_import.admin
-  route_name: media_import.family
+  route_name: media_import.media

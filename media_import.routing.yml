@@ -1,3 +1,12 @@
+media_import.media:
+  path: 'admin/media/import/media'
+  defaults:
+    _title: 'Media Import'
+    _form: 'Drupal\media_import\Form\MediaImportForm'
+  requirements:
+    _permission: 'import media'
+
+
 media_import.tour:
   path: 'admin/media/import/tour'
   defaults:

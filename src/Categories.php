@@ -2,57 +2,39 @@
 
 namespace Drupal\media_import;
 
-use Drupal\Core\File\FileSystemInterface;
-use Drupal\media\Entity\Media;
-use Drupal\node\Entity\Node;
-use Drupal\Core\File\Exception\NotRegularDirectoryException;
+use Drupal\Core\Entity\EntityTypeManagerInterface;
+use Drupal\taxonomy\Entity\Term;
 
+class Categories {
 
-class TourMedia {
+	/**
+	* Constructor
+	*
+	*/
+	public function __construct(protected EntityTypeManagerInterface $entityTypeManager) {}
 
-  protected $tours;
+	/**
+	* Get list of Categories
+	*
+	*/
+	public function getCategories() {
+		
+		// Get the picture_type vocabulary
+		$vocabulary = $this->entityTypeManager->getStorage('taxonomy_vocabulary')->load('picture_type');
+	
+		// Get the picture type terms
+		$tids = $this->entityTypeManager->getStorage('taxonomy_term')->getQuery()
+			->condition('vid', $vocabulary->id())
+			->accessCheck(TRUE)
+			->execute();
+	
+		foreach ($tids as $tid) {
+		  $tname = Term::load($tid)->getName();
+		  $categories[$tid] = $tname;
+		}
+	
+		return $categories;
+	}
 
-  /**
-   * Constructor
-   *
-   */
-  public function __construct() {
-    $ids = \Drupal::entityQuery('node')
-        ->condition('type', 'tour')
-        ->accessCheck('TRUE')
-        ->sort('field_start_date')
-        ->execute();
-
-    foreach ($ids as $tid) {
-      $tname = Node::load($tid)->getTitle();
-      $this->tours[$tid] = $tname;
-    }
-
-  }
-
-
-  /**
-   * Get list of Tours
-   *
-   */
-  public function getTours() {
-    return $this->tours;
-  }
-
-   /**
-     * Get list of media
-     *
-     */
-   public function getMedia($tourid) {
-        $ids = \Drupal::entityQuery('media')
-            ->condition('bundle', 'image')
-            ->condition('field_tour', $tourid)
-            ->accessCheck('TRUE')
-            ->execute();
-
-        $medias = Media::loadMultiple($ids);
-        return $medias;
-    }
-
-
+// End of Class
 }
