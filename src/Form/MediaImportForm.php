@@ -247,13 +247,23 @@ final class MediaImportForm extends FormBase {
       		$form_state->setRebuild();
     	}
     	else {
-    	
-	    	dpm([$this->path, $this->category, $this->event, $this->tour]);
-			// $this->importer->importMedia($this->category);
-  // 			$form_state->setRebuild();
-
-/*    
+    		switch ($this->category) {
+    			case 12:
+        			// Family pictures
+        			$this->importer->importFamily($this->event);
+					break;
+				case 71:
+					// Touring pictures
+					$this->importer->importTour($this->tour);
+					break;
+				default:
+					$this->importer->importMedia($this->category);
+			}
+      
       		// Redirect to media
+      		
+      		$form_state->setRedirect('entity.media.collection');
+      		/*
      	 	$path = '/admin/content/media';
 
 			$validator = \Drupal::service('path.validator');
@@ -262,8 +272,7 @@ final class MediaImportForm extends FormBase {
 			$route_parameters = $url_object->getrouteParameters();
 			
 			$form_state->setRedirect($route_name, $route_parameters);
-
-*/
+			*/
 		}
 	}
 

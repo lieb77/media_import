@@ -67,9 +67,9 @@ class MediaImport {
 	public function importMedia($category) {
 	
 		//See if we're using an existing category or create a new one
-		$tid = is_numeric($category) ? $category : $this->create_taxonomy_term($category);
+		// $tid = is_numeric($category) ? $category : $this->create_taxonomy_term($category);
 	
-	dpm($tid);
+	dpm($category);
 	/*
 		// Loop through the files and save as entities
 		foreach ($this->files as $filename) {
@@ -77,6 +77,54 @@ class MediaImport {
 			$media = $this->create_media_entity($file, $tid);
 		}
 */
+	}
+
+	/**
+	 * Import images for Family event
+	 *
+	 * @param int $event
+	 *  tid of Event term
+	 *
+	 * @return
+	 *  Success or not
+	 *
+	 */
+	public function importFamily($event) {
+		
+		dpm($event);
+		//See if we're using an existing category or create a new one
+		//$tid = is_numeric($category) ? $category : $this->create_taxonomy_term($category);
+	
+	
+		/*
+		// Loop through the files and save as entities
+		foreach ($this->files as $filename) {
+			$file = $this->create_file_entity($filename);
+			$media = $this->create_media_entity($file, $tid);
+		}
+		*/
+	}
+
+	/**
+	 * Import images for Tour
+	 *
+	 * @param int $tour
+	 *  nid of Tour node
+	 *
+	 * @return
+	 *  Success or not
+	 *
+	 */
+	public function importTour($tour) {
+	
+		dpm($tour);
+		/*
+		// Loop through the files and save as entities
+		foreach ($this->files as $filename) {
+			$file = $this->create_file_entity($filename);
+			$media = $this->create_media_entity($file, $tid);
+		}
+	*/
 	}
 
 
