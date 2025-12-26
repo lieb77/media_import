@@ -166,7 +166,7 @@ final class MediaImportForm extends FormBase {
 					// Show this textfield only if the category 'family' is selected above.
 					'visible' => [
 						// This uses a jQuery selector.
-						':input[name="categories"]' => ['value' => '12'],
+						':input[name="categories"]' => ['value' => $this->familyCategory ],
 					],
 				],
 			];
@@ -182,7 +182,7 @@ final class MediaImportForm extends FormBase {
 					// Show this textfield only if the category 'family' is selected above.
 					'visible' => [
 						':input[name="events"]' => ['value' => '999'],
-						':input[name="categories"]' => ['value' => '12'],
+						':input[name="categories"]' => ['value' => $this->familyCategory],
 					],
 				],
 
@@ -199,7 +199,7 @@ final class MediaImportForm extends FormBase {
 				'#states' => [
 					// Show this textfield only if the category 'Tour' is selected above.
 					'visible' => [
-						':input[name="categories"]' => ['value' => '71'],
+						':input[name="categories"]' => ['value' => $this->tourCategory],
 					],
 				],
 			];
@@ -273,11 +273,11 @@ final class MediaImportForm extends FormBase {
     	}
     	else {
     		switch ($this->category) {
-    			case 12:
+    			case $this->familyCategory:
         			// Family pictures
         			$this->importer->importFamily($this->event);
 					break;
-				case 71:
+				case $this->tourCategory:
 					// Touring pictures
 					$this->importer->importTour($this->tour);
 					break;
