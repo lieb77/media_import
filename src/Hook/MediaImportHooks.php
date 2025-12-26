@@ -21,16 +21,21 @@ class MediaImportHooks {
 	#[Hook('help')]
 	public function help($route_name, RouteMatchInterface $route_match) {
 		switch ($route_name) {
-		case 'help.pagetour_media':
-		$output  = "<h2>Media Import Help</h2>";
-		
-		return $output;
-	}
+		case 'help.page.media_import':
+			$output  = "<h2>Media Import Help</h2>";
+			$output .= "<p>This module will import image files as media objects. ";
+			$output .= "The files are first placed in a subdiectory of sites/default/files/. ";
+			$output .= "Media can then be tagged with a category, a family event, ";
+			$output .= "or a bicycle tour.</p>";
+			return $output;
+		}
+		return null;
 	}
 	
 	
 	/**
-	 * Dynamically assigns the best available parent link.
+	 * Dynamically assigns the best available parent link
+	 * to our media import menu link
 	 */
 	#[Hook('menu_links_discovered_alter')]
 	public function menuLinksDiscoveredAlter(array &$links): void {
@@ -48,18 +53,18 @@ class MediaImportHooks {
 		// 2. List potential parents in order of preference
 		$potential_parents = [
 			'admin_toolbar_tools.extra_links:media_page', // Admin Toolbar Extra
-			'view.media.page_1',                         // Core Media View (Table)
-			'view.media_library.page_1',                 // Media Library View (Grid)
+			'view.media.page_1',                          // Core Media View (Table)
+			'view.media_library.page_1',                  // Media Library View (Grid)
 			'entity.media.collection',                    // Media Entity Route
-			'system.admin_content',                      // Fallback: Main Content Menu
+			'system.admin_content',                       // Fallback: Main Content Menu
 		];
 		
 		// 3. Detect and assign the first parent that exists on the site
 		foreach ($potential_parents as $parent_id) {
-		  if (isset($links[$parent_id])) {
-			$my_link['parent'] = $parent_id;
-			break;
-		  }
+			if (isset($links[$parent_id])) {
+				$my_link['parent'] = $parent_id;
+				break;
+		  	}
 		}
 		
 		$links['media_import.media_sublink'] = $my_link;

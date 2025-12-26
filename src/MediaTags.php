@@ -6,7 +6,7 @@ use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\taxonomy\Entity\Term;
 use Drupal\node\Entity\Node;
 
-class Categories {
+class MediaTags {
 
 	/**
 	* Constructor

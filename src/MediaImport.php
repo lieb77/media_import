@@ -16,6 +16,11 @@ class MediaImport {
 	protected $direxists = TRUE;
 	protected $category;
 
+	// These are the term IDs in the Picture Type vocabulary
+	// which we are calling Catagories in this code.
+	const FAMCAT  = 12;		// Family
+	const TOURCAT = 71;		// Tour
+	
 	/**
  	 * Constructor
 	 */
@@ -67,16 +72,15 @@ class MediaImport {
 	public function importMedia($category) {
 	
 		//See if we're using an existing category or create a new one
-		// $tid = is_numeric($category) ? $category : $this->create_taxonomy_term($category);
+		$tid = is_numeric($category) ? $category : $this->create_category($category);
 	
-	dpm($category);
-	/*
+		$this->category = $tid;
+	
 		// Loop through the files and save as entities
 		foreach ($this->files as $filename) {
 			$file = $this->create_file_entity($filename);
 			$media = $this->create_media_entity($file, $tid);
 		}
-*/
 	}
 
 	/**
@@ -91,18 +95,16 @@ class MediaImport {
 	 */
 	public function importFamily($event) {
 		
-		dpm($event);
-		//See if we're using an existing category or create a new one
-		//$tid = is_numeric($category) ? $category : $this->create_taxonomy_term($category);
+		$this->category = $this::FAMCAT;
+		
+		//See if we're using an existing event or create a new one
+		$tid = is_numeric($event) ? $event : $this->create_event($event);
 	
-	
-		/*
 		// Loop through the files and save as entities
 		foreach ($this->files as $filename) {
 			$file = $this->create_file_entity($filename);
 			$media = $this->create_media_entity($file, $tid);
 		}
-		*/
 	}
 
 	/**
@@ -117,16 +119,16 @@ class MediaImport {
 	 */
 	public function importTour($tour) {
 	
-		dpm($tour);
-		/*
-		// Loop through the files and save as entities
-		foreach ($this->files as $filename) {
-			$file = $this->create_file_entity($filename);
-			$media = $this->create_media_entity($file, $tid);
-		}
-	*/
+		$this->category = $this::TOURCAT;
+		
+		 // Loop through the files and save as entities
+    	foreach ($this->files as $filename) {
+        	$file = $this->create_file_entity($filename);
+        	$media = $this->create_media_entity($file, $tour);
+    	}
 	}
 
+	/************* Private functions ****************/
 
 	/**
 	 * Creates a Drupal file entity from an image file on disk.
@@ -150,6 +152,28 @@ class MediaImport {
 	}
 
 	/**
+	 * Add term to picture_type vocabulary
+	 *
+	 * it appears vocabularies are referenced by name:
+	 *
+	 * @param string $category
+	 *
+	 * @return number $termId
+	 *  tagret_id of new taxonomy term
+	 *
+	*/
+	private function create_category($category){
+	
+		// Create the term
+		$term = Term::create([
+			'vid' => 'picture_type',
+			'name' => $category,
+		]);
+		$term->save();
+		return $term->id();
+	}
+
+	/**
 	 * Add term to Event vocabulary
 	 *
 	 * it appears vocabularies are referenced by name: 'event'
@@ -160,12 +184,12 @@ class MediaImport {
 	 *  tagret_id of new taxonomy term
 	 *
 	*/
-	private function create_taxonomy_term($category){
+	private function create_event($event){
 	
 		// Create the term
 		$term = Term::create([
-			'vid' => 'picture_type',
-			'name' => $category,
+			'vid' => 'event',
+			'name' => $event,
 		]);
 		$term->save();
 		return $term->id();
@@ -184,25 +208,45 @@ class MediaImport {
 	 * @return \Drupal\media\Entity\Media|null
 	 *   The created media entity object, or null if creation failed.
 	 */
-	private function create_media_entity(\Drupal\file\Entity\File $file, $tid){
-	
+	private function create_media_entity(File $file, $id){
+		
+		// We have three types we could be creating
+		switch ($this->category) {
+			case $this::FAMCAT :
+				// Family photo
+				$alt   = 'Family photo';
+				$event = $id;
+				break;
+			case $this::TOURCAT :
+				// Touring
+				$alt   = 'Touring photo';
+				$tour  = $id;
+				break;
+			default:
+				$alt = 'Imported photo';
+		}
+				
 		// Create a new Media entity.
 		$media = Media::create([
-			'bundle'=> 'image',
-			'uid' => 1,
-			'name' => $file->getFilename(),
+			'bundle'			=> 'image',
+			'uid' 				=> 1,
+			'name' 				=> $file->getFilename(),
 			'field_media_image' => [
-			'target_id' => $file->id(),
-			'alt' => t('Family photo'),
-			],
+				'target_id' => $file->id(),
+				'alt' 		=> $alt,
+			],		
 			'field_category' => [
-			'target_id' => $this::CATEGORY,
-			],	
-			'field_event' => [
-			'target_id' => $tid,
+				'target_id' => $this->category,
 			],
 		]);
+		if ($this->category == $this::FAMCAT) {
+			$media->set('field_event', $event);
+		}
+		if ($this->category == $this::TOURCAT) {
+			$media->set('field_tour', ['target_id' => $tour]);
+        }
 		
+
 		try {
 			$media->save();
 		} 
@@ -210,6 +254,7 @@ class MediaImport {
 			\Drupal::logger('add_media')->error('Failed to save media entity: @message', ['@message' => $e->getMessage()]);
 			return null;
 		}
+
 		return $media;
 	}
 

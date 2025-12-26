@@ -12,18 +12,23 @@ use Drupal\node\Entity\Node;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 use Drupal\media_import\MediaImport;
-use Drupal\media_import\Categories;
+use Drupal\media_import\MediaTags;
 
 /**
  * Provides a Tour media form.
  */
 final class MediaImportForm extends FormBase {
 
-	protected $step = 1;
-	protected $path;
-	protected $category;
-	protected $event;
-	protected $tour;
+	protected $step = 1; 	// Multi step form
+	protected $path;		// Path where the files are
+	protected $category;	// Selected from the Picture Types vocabulary
+	protected $event;		// Selected from the Events vocabulary
+	protected $tour;		// Select from Tour content
+	
+	// These are the term IDs in the Picture Type vocabulary
+	// which we are calling Catagories in this code.
+	const FAMCAT  = 12;		// Family
+	const TOURCAT = 71;		// Tour
 	
 	
 	/**
@@ -31,7 +36,7 @@ final class MediaImportForm extends FormBase {
 	 *
 	 */
 	public function __construct(
-		protected Categories $categories,
+		protected MediaTags   $tagger,
 		protected MediaImport $importer ) {}
 
 	/**
@@ -39,7 +44,7 @@ final class MediaImportForm extends FormBase {
 	 */
 	public static function create(ContainerInterface $container) {
 		return new static(
-		  $container->get('media_import.categories'),
+		  $container->get('media_import.tags'),
 		  $container->get('media_import.import'),
 		);
 	}
@@ -83,9 +88,9 @@ final class MediaImportForm extends FormBase {
 		}
 	
 		else {
-			$categories = $this->categories->getCategories();
-			$events     = $this->categories->getEvents();
-			$tours      = $this->categories->getTours();
+			$categories = $this->tagger->getCategories();
+			$events     = $this->tagger->getEvents();
+			$tours      = $this->tagger->getTours();
 			
 			$form['intro'] = [
 				'#type'  => 'item',
@@ -235,7 +240,10 @@ final class MediaImportForm extends FormBase {
 			
 					
 		}
-		// We don't have to validate anything for step 2
+		else {
+			$this->importer->dirExists($this->path); 
+			$this->importer->getFileNames();
+		}		
 	}
 
 	/**
@@ -259,20 +267,8 @@ final class MediaImportForm extends FormBase {
 				default:
 					$this->importer->importMedia($this->category);
 			}
-      
-      		// Redirect to media
-      		
+      		// Redirect to media    		
       		$form_state->setRedirect('entity.media.collection');
-      		/*
-     	 	$path = '/admin/content/media';
-
-			$validator = \Drupal::service('path.validator');
-			$url_object = $validator->getUrlIfValid($path);
-			$route_name = $url_object->getRouteName();
-			$route_parameters = $url_object->getrouteParameters();
-			
-			$form_state->setRedirect($route_name, $route_parameters);
-			*/
 		}
 	}
 
