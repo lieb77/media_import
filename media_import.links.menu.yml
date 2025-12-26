@@ -1,0 +1,6 @@
+media_import.settings:
+  title: Media Import Settings
+  description: Setiings for Media Import
+  parent: system.admin_config_media
+  route_name: media_import.settings
+  weight: 10

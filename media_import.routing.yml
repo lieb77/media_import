@@ -6,3 +6,11 @@ media_import.media:
   requirements:
     _permission: 'import media'
 
+
+media_import.settings:
+  path: '/admin/config/system/settings'
+  defaults:
+    _title: 'Media Import Settings'
+    _form: 'Drupal\media_import\Form\SettingsForm'
+  requirements:
+    _permission: 'administer site configuration'

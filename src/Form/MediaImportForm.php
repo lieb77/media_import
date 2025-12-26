@@ -11,6 +11,7 @@ use Drupal\media\Entity\Media;
 use Drupal\node\Entity\Node;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
+
 use Drupal\media_import\MediaImport;
 use Drupal\media_import\MediaTags;
 
@@ -24,20 +25,25 @@ final class MediaImportForm extends FormBase {
 	protected $category;	// Selected from the Picture Types vocabulary
 	protected $event;		// Selected from the Events vocabulary
 	protected $tour;		// Select from Tour content
-	
-	// These are the term IDs in the Picture Type vocabulary
-	// which we are calling Catagories in this code.
-	const FAMCAT  = 12;		// Family
-	const TOURCAT = 71;		// Tour
-	
-	
+
+	protected $familyCategory;
+	protected $tourCategory;
+
+
 	/**
 	 * {@inheritdoc}
 	 *
 	 */
 	public function __construct(
 		protected MediaTags   $tagger,
-		protected MediaImport $importer ) {}
+		protected MediaImport $importer) {
+
+		// Get the config settings
+        $config = $this->config('media_import.settings');
+        $this->familyCategory = $config->get('family');
+        $this->tourCategory   = $config->get('tour');
+
+	}
 
 	/**
 	 * {@inheritdoc}
@@ -45,7 +51,7 @@ final class MediaImportForm extends FormBase {
 	public static function create(ContainerInterface $container) {
 		return new static(
 		  $container->get('media_import.tags'),
-		  $container->get('media_import.import'),
+		  $container->get('media_import.import')
 		);
 	}
 
@@ -60,23 +66,23 @@ final class MediaImportForm extends FormBase {
 	 * {@inheritdoc}
 	 */
 	public function buildForm(array $form, FormStateInterface $form_state): array {
-	
+
 		if ($this->step == 2) {
-			
+
 	  		$filenames = $this->importer->getFileNames();
-	
+
 			foreach ($filenames as $file) {
 				$list .= "<br />" . $file ;
 			}
-			
+
 			$title = $this->t("Files to import" . $tname);
-			
+
 			$form['files'] = [
 				'#type'   => 'item',
 				'#title'  => $title,
 				'#markup' => $list,
 			];
-			
+
 			$form['actions'] = [
 				'#type' => 'actions',
 				'submit' => [
@@ -84,14 +90,25 @@ final class MediaImportForm extends FormBase {
 				'#value' => $this->t('Import Media'),
 				],
 			];
-	
+
 		}
-	
+
 		else {
+
+		    // If the settings have not been set we must redirect to the settings form
+		    if ( empty($this->familyCategory) || empty($this->tourCategory)) {
+                $form['error'] = [
+                    '#type'   => 'item',
+                    '#markup' =>  $this->t("You must first configure this module in Comfig -> Media -> Media Import Settings"),
+                ];
+      		    return $form;
+		    }
+
+
 			$categories = $this->tagger->getCategories();
 			$events     = $this->tagger->getEvents();
 			$tours      = $this->tagger->getTours();
-			
+
 			$form['intro'] = [
 				'#type'  => 'item',
 				'#markup' => $this->t(
@@ -99,7 +116,7 @@ final class MediaImportForm extends FormBase {
 					"<p>Family photos will be tagged with an event</p>" .
 					"<p>Bicycle tour photos will be attached to a Tour</p>"	),
 			];
-			
+
 			// Text field to get the directory path
 			$form['media'] = [
 				'#type'  => 'textfield',
@@ -109,18 +126,18 @@ final class MediaImportForm extends FormBase {
 				'#required' => TRUE,
 				'#description' => $this->t("Enter the directory which contains the images, relative to sites/default/files/"),
 			];
-			
+
 			// Dropdown to select existing category
 			$categories['999'] = "New category";
 			$form['categories'] = [
 				'#type'  => 'select',
 				'#title' => $this->t("Select an existing category"),
 				'#options' => $categories,
-				'#description' => $this->t("Select a category name you would like assigned to these photos."),				
+				'#description' => $this->t("Select a category name you would like assigned to these photos."),
 				'#attributes' => ['id' => 'categories'],
 			];
-		
-			
+
+
 			// Text field to get the category name
 			$form['category'] = [
 				'#type'  => 'textfield',
@@ -131,12 +148,12 @@ final class MediaImportForm extends FormBase {
 				'#states' => [
 					// Show this textfield only if the category 'family' is selected above.
 					'visible' => [
-						// This uses a jQuery selector. 
+						// This uses a jQuery selector.
 						':input[name="categories"]' => ['value' => '999'],
 					],
-				],			
+				],
 			];
-							
+
 			// Dropdown to select existing event
 			$events['999'] = "New event";
 			$form['events'] = [
@@ -148,12 +165,12 @@ final class MediaImportForm extends FormBase {
 				'#states' => [
 					// Show this textfield only if the category 'family' is selected above.
 					'visible' => [
-						// This uses a jQuery selector. 
+						// This uses a jQuery selector.
 						':input[name="categories"]' => ['value' => '12'],
 					],
-				],														
+				],
 			];
-			
+
 			// Text field to get a new event name
 			$form['event'] = [
 				'#type'  => 'textfield',
@@ -167,11 +184,11 @@ final class MediaImportForm extends FormBase {
 						':input[name="events"]' => ['value' => '999'],
 						':input[name="categories"]' => ['value' => '12'],
 					],
-				],														
+				],
 
 			];
-			
-			
+
+
 
 			$form['tours'] = [
 				'#type'  => 'select',
@@ -184,11 +201,11 @@ final class MediaImportForm extends FormBase {
 					'visible' => [
 						':input[name="categories"]' => ['value' => '71'],
 					],
-				],														
+				],
 			];
 
 
-	
+
 			$form['actions'] = [
 				'#type' => 'actions',
 				'submit' => [
@@ -196,7 +213,7 @@ final class MediaImportForm extends FormBase {
 					'#value' => $this->t('Continue'),
 				],
 			];
-			
+
 //			$form['#attached']['library'][] = 'core/htmx';
 		}
 		return $form;
@@ -208,42 +225,42 @@ final class MediaImportForm extends FormBase {
 	 */
 	public function validateForm(array &$form, FormStateInterface $form_state): void {
 		if ($this->step == 1) {
-		
+
 			// Confirm the directory exists
 		  	$path = trim($form_state->getValue('media'));
-		  			  	
+
 		  	if ($this->importer->dirExists($path) === FALSE ) {
 				$form_state->setErrorByName('media', $this->t("Directory %dir does not exist", ['%dir' => $path]));
 		  	}
-		  	
+
 		  	// Save directory path
 			$this->path = $path;
-		
+
 			// See if we have a new category, else uses the selected category
 		    // And stash it for later
 		  	$this->category = (! empty($form_state->getValue('category'))) ?
 				trim($form_state->getValue('category')) : $form_state->getValue('categories');
-	
+
 			// See if we have Family pictures
-			if ($this->category == 12) {
+			if ($this->category == $this->familyCategory) {
 				// See if we have a new event, else uses the selected events
 				// And stash it for later
 				$this->event = (! empty($form_state->getValue('event'))) ?
 					trim($form_state->getValue('event')) : $form_state->getValue('events');
-			}	
-			
+			}
+
 			// See if we have Tour pictures
-			if ($this->category == 71) {				
+			if ($this->category == $this->tourCategory) {
 				// And stash it for later
 				$this->tour = $form_state->getValue('tours');
-			}	
-			
-					
+			}
+
+
 		}
 		else {
-			$this->importer->dirExists($this->path); 
+			$this->importer->dirExists($this->path);
 			$this->importer->getFileNames();
-		}		
+		}
 	}
 
 	/**
@@ -267,10 +284,10 @@ final class MediaImportForm extends FormBase {
 				default:
 					$this->importer->importMedia($this->category);
 			}
-      		// Redirect to media    		
+      		// Redirect to media
       		$form_state->setRedirect('entity.media.collection');
 		}
 	}
 
 // End-of-class
-} 
+}
