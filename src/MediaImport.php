@@ -225,7 +225,7 @@ class MediaImport {
 				$alt   = 'Family photo';
 				$event = $id;
 				break;
-			case $this->TourCategory :
+			case $this->tourCategory :
 				// Touring
 				$alt   = 'Touring photo';
 				$tour  = $id;
@@ -251,7 +251,7 @@ class MediaImport {
 			$media->set('field_event', $event);
 		}
 		if ($this->category == $this->tourCategory) {
-			$media->set('field_tour', ['target_id' => $tour]);
+			$media->set('field_tour', $tour);
         }
 
 
