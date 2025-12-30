@@ -31,6 +31,7 @@ final class MediaImportController extends ControllerBase {
         $header = [
             $this->t("Id"),
             $this->t("Media name"),
+            $this->t("File name"),
             $this->t("Uri")
         ];
 

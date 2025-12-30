@@ -29,14 +29,14 @@ class MediaList {
         // 1. Load all media entities. You might want to filter by type (e.g., 'image', 'file')
         // for performance on large sites, but this loads all.
         $media_ids = $this->entityTypeManager->getStorage('media')->getQuery()
-            ->condition('type', 'image')
-      ->accessCheck('TRUE')
-      ->execute();
+            ->condition('bundle', 'image')
+            ->accessCheck('TRUE')
+            ->execute();
         
         $media_entities = Media::loadMultiple($media_ids);
 
         foreach ($media_entities as $media_entity) {
-            $file_entity = $media_entity->get('media_entity_image')->entity;
+            $file_entity = $media_entity->get('field_media_image')->entity;
             if ($file_entity instanceof File) {
                 $file_uri = $file_entity->getFileUri();
                 $filename = $file_entity->getFilename();
