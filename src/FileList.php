@@ -1,6 +1,6 @@
 <?php
 
-namespace Drupal\file_import;
+namespace Drupal\media_import;
 
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\file\Entity\Media;

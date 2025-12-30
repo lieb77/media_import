@@ -26,7 +26,7 @@ final class MediaImportController extends ControllerBase {
     public static function create(ContainerInterface $container): static {
         return new static(
             $container->get('media_import.list'),
-            $container->get('media_import.files'),
+            $container->get('media_import.files')
         );
     }
 
