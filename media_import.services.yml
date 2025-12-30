@@ -7,3 +7,7 @@ services:
   media_import.import:
     class: Drupal\media_import\MediaImport
     arguments: ['@file_system', '@config.factory']
+
+ media_import.lists:
+    class: Drupal\media_import\MediaList
+    arguments: ['@entity_type.manager']
