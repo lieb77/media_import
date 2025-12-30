@@ -8,6 +8,6 @@ services:
     class: Drupal\media_import\MediaImport
     arguments: ['@file_system', '@config.factory']
 
- media_import.lists:
+  media_import.list:
     class: Drupal\media_import\MediaList
     arguments: ['@entity_type.manager']

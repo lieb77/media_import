@@ -17,8 +17,8 @@ media_import.settings:
 
 media_import.list:
   path: 'admin/media/list'
-   defaults:
-    _title: 'Ridelog'
+  defaults:
+    _title: 'Media list'
     _controller: '\Drupal\media_import\Controller\MediaImportController:getMedia'
   requirements:
     _permission: 'import media'

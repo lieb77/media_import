@@ -1,9 +1,11 @@
 <?php
 
-namespace \Drupal\media_import\Controller;
+declare(strict_types=1);
 
+namespace Drupal\media_import\Controller;
+
+use Drupal\Core\Controller\ControllerBase;
 use Symfony\Component\DependencyInjection\ContainerInterface;
-
 use Drupal\media_import\MediaList;
 
 /**
@@ -30,7 +32,7 @@ final class MediaImportController extends ControllerBase {
             $this->t("Id"),
             $this->t("Media name"),
             $this->t("Uri")
-        ]
+        ];
 
 
         // Construct the render array for the table.
@@ -40,7 +42,7 @@ final class MediaImportController extends ControllerBase {
           '#rows'   => $media,
         ];
 
-        return $build
+        return $build;
 
     }
 
