@@ -22,3 +22,13 @@ media_import.list:
     _controller: '\Drupal\media_import\Controller\MediaImportController:getMedia'
   requirements:
     _permission: 'import media'
+
+
+media_import.files:
+  path: 'admin/file/list'
+  defaults:
+    _title: 'Media list'
+    _controller: '\Drupal\media_import\Controller\MediaImportController:getFiles'
+  requirements:
+    _permission: 'import media'
+

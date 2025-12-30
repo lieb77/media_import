@@ -7,13 +7,17 @@ namespace Drupal\media_import\Controller;
 use Drupal\Core\Controller\ControllerBase;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Drupal\media_import\MediaList;
+use Drupal\media_import\FileList;
+
 
 /**
  *
  */
 final class MediaImportController extends ControllerBase {
 
-    public function __construct(protected MediaList $lister) {}
+    public function __construct(
+        protected MediaList $mediaLister,
+        protected FileList  $fileLister) {}
 
 
     /**
@@ -22,11 +26,12 @@ final class MediaImportController extends ControllerBase {
     public static function create(ContainerInterface $container): static {
         return new static(
             $container->get('media_import.list'),
+            $container->get('media_import.files'),
         );
     }
 
     public function getMedia(){
-        $media = $this->lister->getMediaInfo();
+        $media = $this->mediaLister->getMediaInfo();
 
         $header = [
             $this->t("Id"),
@@ -46,6 +51,30 @@ final class MediaImportController extends ControllerBase {
         return $build;
 
     }
+
+
+    public function getFiles(){
+        $files = $this->fileLister->getFileInfo();
+
+        $header = [
+            $this->t("Id"),
+            $this->t("File name"),
+            $this->t("Uri")
+        ];
+
+
+        // Construct the render array for the table.
+        $build['table'] = [
+          '#type'   => 'table',
+          '#header' => $header,
+          '#rows'   => $files,
+        ];
+
+        return $build;
+
+    }
+
+
 
 //end-of-class
 }

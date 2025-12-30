@@ -11,3 +11,7 @@ services:
   media_import.list:
     class: Drupal\media_import\MediaList
     arguments: ['@entity_type.manager']
+
+  media_import.files:
+    class: Drupal\media_import\FileList
+    arguments: ['@entity_type.manager']
