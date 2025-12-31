@@ -5,6 +5,7 @@ namespace Drupal\media_import;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\file\Entity\Media;
 use Drupal\file\Entity\File;
+use Drupal\file\FileUsage\DatabaseFileUsageBackend;
 
 
 class FileList {
@@ -13,7 +14,9 @@ class FileList {
   * Constructor
   *
   */
-  public function __construct(protected EntityTypeManagerInterface $entityTypeManager) {}
+  public function __construct(
+    protected EntityTypeManagerInterface $entityTypeManager,
+    protected DatabaseFileUsageBackend $fileUsage ) {}
 
 
 
@@ -37,6 +40,8 @@ class FileList {
         foreach ($file_entities as $file_entity) {
             $file_uri = $file_entity->getFileUri();
             $filename = $file_entity->getFilename();
+
+            $usage = $this->fileUsage->listUsage($file_entity);
 
             $file_info[] = [
                 'file_id'   => $file_entity->id(),
