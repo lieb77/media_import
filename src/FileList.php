@@ -42,7 +42,10 @@ class FileList {
             $filename = $file_entity->getFilename();
 
             $usage = $this->fileUsage->listUsage($file_entity);
-
+            if ( !empty($usage)) {
+                dpm($usage);
+                break;
+            }
             $file_info[] = [
                 'file_id'   => $file_entity->id(),
                 'filename'   => $filename,

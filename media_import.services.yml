@@ -14,4 +14,4 @@ services:
 
   media_import.files:
     class: Drupal\media_import\FileList
-    arguments: ['@entity_type.manager, @file.usage']
+    arguments: ['@entity_type.manager', '@file.usage']
