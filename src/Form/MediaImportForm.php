@@ -107,7 +107,7 @@ final class MediaImportForm extends FormBase {
 
 			$categories = $this->tagger->getCategories();
 			$events     = $this->tagger->getEvents();
-			$tours      = $this->tagger->getTours();
+			// $tours      = $this->tagger->getTours();
 
 			$form['intro'] = [
 				'#type'  => 'item',
@@ -259,7 +259,7 @@ final class MediaImportForm extends FormBase {
 		}
 		else {
 			$this->importer->dirExists($this->path);
-			$this->importer->getFileNames();
+			
 		}
 	}
 
@@ -272,18 +272,42 @@ final class MediaImportForm extends FormBase {
       		$form_state->setRebuild();
     	}
     	else {
+    		$files = $this->importer->getFileNames();    		
+    		
+    		$contextId = NULL;
     		switch ($this->category) {
     			case $this->familyCategory:
         			// Family pictures
-        			$this->importer->importFamily($this->event);
+        			$contextId = $this->event;
 					break;
 				case $this->tourCategory:
 					// Touring pictures
-					$this->importer->importTour($this->tour);
+					$contextId = $this->tour;
 					break;
 				default:
-					$this->importer->importMedia($this->category);
+					$contextId = $this->category;
 			}
+			
+			$operations = [];
+			foreach ($files as $filename) {
+				$operations[] = [
+				'\Drupal\media_import\Batch\BatchProcessor::processStep',
+					[
+					  $filename, 
+					  $this->category, 
+					  $contextId,
+					],
+				];
+			}
+				
+			$batch = [
+				'title' => $this->t('Importing @count Photos', ['@count' => count($files)]),
+				'operations' => $operations,
+				'finished' => '\Drupal\media_import\Batch\BatchProcessor::finish',
+			];
+			
+			batch_set($batch);
+
       		// Redirect to media
       		$form_state->setRedirect('entity.media.collection');
 		}
