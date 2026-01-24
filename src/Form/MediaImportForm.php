@@ -107,7 +107,7 @@ final class MediaImportForm extends FormBase {
 
 			$categories = $this->tagger->getCategories();
 			$events     = $this->tagger->getEvents();
-			// $tours      = $this->tagger->getTours();
+			$tours      = $this->tagger->getTours();
 
 			$form['intro'] = [
 				'#type'  => 'item',
