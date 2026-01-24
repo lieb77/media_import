@@ -9,16 +9,16 @@ use Drupal\Core\StringTranslation\StringTranslationTrait;
 class BatchProcessor {
 	use StringTranslationTrait;
 
-  	public static function processStep($filename, $category, $context_id, &$context) {
+  	public static function processStep($filename, $path, $category, $context_id, &$context) {
 		// Re-instantiate your service inside the batch request
-		$importer = \Drupal::service('media_import.importer');
-		
+		$importer = \Drupal::service('media_import.import');
+
 		// We update the message for the UI progress bar
 		$context['message'] = t('Importing and Geotagging: @file', ['@file' => $filename]);
-		
+
 		// Execute the actual logic for ONE file
-		$result = $importer->importMedia($filename, $category, $context_id);
-		
+		$result = $importer->importMedia($filename, $path, $category, $context_id);
+
 		if ($result) {
 			$context['results'][] = $filename;
 		}
@@ -32,13 +32,13 @@ class BatchProcessor {
 		} else {
 			\Drupal::messenger()->addError(t('The import finished with errors.'));
 		}
-		
+
 		// Redirect to the media collection
 		$url = Url::fromRoute('entity.media.collection');
-		
-		// By setting this redirect in the finish function, 
+
+		// By setting this redirect in the finish function,
 		// the browser will go here automatically after the progress bar finishes.
 		return new \Symfony\Component\HttpFoundation\RedirectResponse($url->toString());
 	}
-	
+
 }

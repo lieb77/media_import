@@ -47,7 +47,9 @@ class MediaImport {
 	 *
 	 *
 	 */
-	public function importMedia($filename, $category, $context_id) {
+	public function importMedia($filename, $path, $category, $context_id) {
+
+	   $this->directory = "public://" . $path;
 
 		//See if we're using an existing category or create a new one
 		$tid = is_numeric($category) ? $category : $this->create_category($category);
@@ -56,17 +58,17 @@ class MediaImport {
 
 		// Create the file entity
 		$file = $this->create_file_entity($filename);
-	
+
 		// Get the full path
 		$uri = $file->getFileUri();
 		$fullPath = $this->fileSystem->realpath($uri);
-		
+
 		// Get GeoTags
 		$geoData = $this->geoTagger->process($fullPath);
 
 		// Create the media entity
 		$media = $this->create_media_entity($file, $context_id);
-	
+
 		// Update media with GeoTags
 		$this->addGeotags($media, $geoData);
 	}
@@ -106,7 +108,7 @@ class MediaImport {
 
 	}
 
-	
+
 
 	/************* Private functions ****************/
 
@@ -259,7 +261,7 @@ class MediaImport {
 
 		return $filenames;
 	}
-	
+
 	/**
 	 * Add GeoTags
 	 *
@@ -268,35 +270,35 @@ class MediaImport {
 	 *
 	 */
 	private function addGeotags($media, $geoData){
-		
+
 		$media->set('field_taken',     $geoData['date']);
 		$media->set('field_location',  $geoData['full']);
 		$media->set('field_longitude', $geoData['lng']);
 		$media->set('field_latitude',  $geoData['lat']);
-		
+
 		$lineage_ids = [];
-		
+
 		if (!empty($geoData['country'])) {
 			$country_id = $this->getOrCreateTerm($geoData['country'], 'geography', 0);
 			$lineage_ids[] = $country_id;
-			
+
 			//  State / Province
 			if (!empty($geoData['state'])) {
 				$state_id = $this->getOrCreateTerm($geoData['state'], 'geography', $country_id);
 				$lineage_ids[] = $state_id;
-		
+
 				// 3. City / Town / Hamlet
 				if (!empty($geoData['city'])) {
 					$city_id = $this->getOrCreateTerm($geoData['city'], 'geography', $state_id);
 					$lineage_ids[] = $city_id;
 				}
 			}
-		}		
+		}
 		// Save the whole array to the extity reference field
 		$media->set('field_place', $lineage_ids);
 		$media->save();
 	}
-	
+
 	/**
 	 * Get existing term or create a new one
 	 *
@@ -309,13 +311,13 @@ class MediaImport {
 			->condition('vid', $vid)
 			->condition('parent', $parent_tid) // Ensure we find the right one (e.g., "Orange" in CA vs "Orange" in NSW)
 			->accessCheck(FALSE);
-		
+
 		$tids = $query->execute();
-		
+
 		if (!empty($tids)) {
 			return reset($tids);
 		}
-		
+
 		$term = Term::create([
 			'name' => $name,
 			'vid' => $vid,
@@ -324,7 +326,7 @@ class MediaImport {
 		$term->save();
 		return $term->id();
 	}
-	
+
 
 // End-of-class
 }

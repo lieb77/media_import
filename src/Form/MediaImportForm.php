@@ -259,7 +259,7 @@ final class MediaImportForm extends FormBase {
 		}
 		else {
 			$this->importer->dirExists($this->path);
-			
+
 		}
 	}
 
@@ -272,8 +272,8 @@ final class MediaImportForm extends FormBase {
       		$form_state->setRebuild();
     	}
     	else {
-    		$files = $this->importer->getFileNames();    		
-    		
+    		$files = $this->importer->getFileNames();
+
     		$contextId = NULL;
     		switch ($this->category) {
     			case $this->familyCategory:
@@ -287,25 +287,26 @@ final class MediaImportForm extends FormBase {
 				default:
 					$contextId = $this->category;
 			}
-			
+
 			$operations = [];
 			foreach ($files as $filename) {
 				$operations[] = [
 				'\Drupal\media_import\Batch\BatchProcessor::processStep',
 					[
-					  $filename, 
-					  $this->category, 
+					  $filename,
+					  $this->path,
+					  $this->category,
 					  $contextId,
 					],
 				];
 			}
-				
+
 			$batch = [
 				'title' => $this->t('Importing @count Photos', ['@count' => count($files)]),
 				'operations' => $operations,
 				'finished' => '\Drupal\media_import\Batch\BatchProcessor::finish',
 			];
-			
+
 			batch_set($batch);
 
       		// Redirect to media
