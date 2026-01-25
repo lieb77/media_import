@@ -5,6 +5,5 @@
     "license": "GPL-2.0-or-later",
     "require": {
         "drupal/core": "^10 || ^11"
-        "drupal/exif": "^ 2.7"
     }
 }
