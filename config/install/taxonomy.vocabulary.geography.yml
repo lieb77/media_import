@@ -1,9 +1,0 @@
-uuid: 1922612e-86d3-468a-b9e9-9fac087ee1e4
-langcode: en
-status: true
-dependencies: {  }
-name: Geography
-vid: geography
-description: null
-weight: 0
-new_revision: false
