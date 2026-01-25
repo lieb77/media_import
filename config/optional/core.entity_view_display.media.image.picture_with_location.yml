@@ -1,0 +1,62 @@
+uuid: 1a0a61d3-6d61-44dd-88be-0a2b6007ff24
+langcode: en
+status: true
+dependencies:
+  config:
+    - core.entity_view_mode.media.picture_with_location
+    - field.field.media.image.field_category
+    - field.field.media.image.field_latitude
+    - field.field.media.image.field_location
+    - field.field.media.image.field_longitude
+    - field.field.media.image.field_media_image
+    - field.field.media.image.field_place
+    - field.field.media.image.field_taken
+    - image.style.large
+    - media.type.image
+  module:
+    - datetime
+    - image
+_core:
+  default_config_hash: 73xaTNkI5J6sfFcBmNYeuk070X3mQS_iwwWaPYyfG2M
+id: media.image.picture_with_location
+targetEntityType: media
+bundle: image
+mode: picture_with_location
+content:
+  field_location:
+    type: string
+    label: visually_hidden
+    settings:
+      link_to_entity: false
+    third_party_settings: {  }
+    weight: 1
+    region: content
+  field_media_image:
+    type: image
+    label: visually_hidden
+    settings:
+      image_link: file
+      image_style: large
+      image_loading:
+        attribute: lazy
+    third_party_settings: {  }
+    weight: 0
+    region: content
+  field_taken:
+    type: datetime_default
+    label: visually_hidden
+    settings:
+      timezone_override: ''
+      format_type: medium
+    third_party_settings: {  }
+    weight: 2
+    region: content
+hidden:
+  created: true
+  field_category: true
+  field_latitude: true
+  field_longitude: true
+  field_place: true
+  name: true
+  thumbnail: true
+  uid: true

@@ -1,0 +1,9 @@
+uuid: 7bd5be29-9d4c-4bff-b923-ae651c1341c1
+langcode: en
+status: true
+dependencies: {  }
+name: 'Picture type'
+vid: picture_type
+description: 'Category or type of picture'
+weight: 0
+new_revision: false
