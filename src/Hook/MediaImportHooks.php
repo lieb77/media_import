@@ -72,63 +72,6 @@ class MediaImportHooks {
 		$links['media_import.media_sublink'] = $my_link;
 	}
 	
-	/**
-	 * Implements hook_media_presave().
-	 * Automatically extracts GPS data when a new media image is created via the UI.
-	 */
-	#[Hook('media_presave')]
-	public function mediaPresave(MediaInterface $media): void {
-		// 1. Only target the 'image' bundle.
-		if ($media->bundle() !== 'image') {
-			return;
-		}
-
-		// 2. Only process if the field is currently empty.
-		// This prevents re-geocoding every time you edit the media title.
-		if ($media->get('field_taken')->isEmpty()) {
-	
-			$source_field = $media->get('field_media_image')->first();
-			if ($source_field && $source_field->entity) {
-				$file_uri = $source_field->entity->getFileUri();
-				$fullPath = \Drupal::service('file_system')->realpath($file_uri);
-				
-				// 3. Call your existing service.
-				$tagger = \Drupal::service('media_import.geotag');
-				$geoData = $tagger->process($fullPath);
-				
-				if ($geoData) {
-					$media->set('field_taken',     $geoData['date']);
-					$media->set('field_location',  $geoData['full']);
-					$media->set('field_longitude', $geoData['lng']);
-					$media->set('field_latitude',  $geoData['lat']);
-			
-					$lineage_ids = [];
-			
-					if (!empty($geoData['country'])) {
-						$country_id = $tagger->getOrCreateTerm($geoData['country'], 'geography', 0);
-						$lineage_ids[] = $country_id;
-			
-						//  State / Province
-						if (!empty($geoData['state'])) {
-							$state_id = $tagger->getOrCreateTerm($geoData['state'], 'geography', $country_id);
-							$lineage_ids[] = $state_id;
-			
-							// 3. City / Town / Hamlet
-							if (!empty($geoData['city'])) {
-								$city_id = $tagger->getOrCreateTerm($geoData['city'], 'geography', $state_id);
-								$lineage_ids[] = $city_id;
-							}
-						}
-					}
-					// Save the whole array to the extity reference field
-					$media->set('field_place', $lineage_ids);
-				}
-			}
-		}
-	}
-  
-  
-	
 	
 // End of class.
 }

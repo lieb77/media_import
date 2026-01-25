@@ -14,7 +14,7 @@ class BatchProcessor {
 		$importer = \Drupal::service('media_import.import');
 
 		// We update the message for the UI progress bar
-		$context['message'] = t('Importing and Geotagging: @file', ['@file' => $filename]);
+		$context['message'] = t('Importing: @file', ['@file' => $filename]);
 
 		// Execute the actual logic for ONE file
 		$result = $importer->importMedia($filename, $path, $category, $context_id);

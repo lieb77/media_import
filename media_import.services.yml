@@ -6,7 +6,7 @@ services:
 
   media_import.import:
     class: Drupal\media_import\MediaImport
-    arguments: ['@file_system', '@config.factory', '@entity_type.manager', '@media_import.geotag']
+    arguments: ['@file_system', '@config.factory', '@entity_type.manager']
 
   media_import.list:
     class: Drupal\media_import\MediaList
@@ -16,9 +16,6 @@ services:
     class: Drupal\media_import\FileList
     arguments: ['@entity_type.manager', '@file.usage']
   
-  media_import.geotag:
-    class: Drupal\media_import\GeoTag
-    arguments: [ '@http_client', '@exif.metadata.reader_factory', '@entity_type.manager', '@logger.channel.media_import' ]
 
   logger.channel.media_import:
     parent: logger.channel_base
