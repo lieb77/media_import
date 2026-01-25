@@ -43,7 +43,6 @@ class FileList {
 
             $usage = $this->fileUsage->listUsage($file_entity);
             if ( !empty($usage)) {
-                dpm($usage);
                 break;
             }
             $file_info[] = [

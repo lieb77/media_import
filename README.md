@@ -5,13 +5,16 @@ This module is not for general consumption as it is part of my custom setup.
 
 Given a directory of images already on the server. this module will import them as media entities, and attach them to a tour.
 
+## Update 1/24/2026 - PL
+This module has been greatly expanded to use the exif module to read metadata from the images and save it to various fields and vocabularies. It also uses the nominatim.openstreetmap.org service to fetch location data given the GPS coordinates from the exif data. The functionality is exposed three ways.
+- During the media import
+- When adding a media image through the UI
+- Through a Drush command that will go through existing media files and geo tag them.
+
+
 ## REQUIREMENTS
 
-The Media Image bundle has been extended to include two additional fields:
-
-    field_category -> reference to a taxonomy term
-    field_tour -> reference to a tour node
-
+There is a dependency in the exif module
 
 ## INSTALLATION
 
@@ -21,7 +24,7 @@ Code lives at https://github.com/lieb77/media_import
 
 ## MAINTAINERS
 
-Current maintainers for Drupal 10:
+Current maintainers for Drupal 11:
 
-- PaulLieberman (lieb) - https://www.drupal.org/u/lieb
+- Paul Lieberman (lieb) - https://www.drupal.org/u/lieb
 
