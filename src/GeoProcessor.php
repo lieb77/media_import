@@ -9,13 +9,11 @@ class GeoProcessor {
 	public static function processItem($ids, &$context) {
 	
 		$geoTagger = \Drupal::getContainer()->get('media_import.geotag');
-		
-	    // Initialize results if first time
-    	if (!isset($context['results']['processed'])) {
-      		$context['results']['processed'] = 0;
-    	}
-    				
+	
 		foreach ($ids as $id) {
+			$context['message'] = t('Processing Media ID: @id', ['@id' => $id]);
+			$context['results'][] = $id;
+			
 			$media = Media::load($id);
 			$file_entity = $media->get('field_media_image')->entity;
 			    
@@ -54,7 +52,11 @@ class GeoProcessor {
 					}		
 					// Save the whole array to the extity reference field
 					$media->set('field_place', $lineage_ids);
-					$media->save();							
+					$media->save();	
+					// After $media->save();
+					\Drupal::entityTypeManager()->getStorage('media')->resetCache([$id]);
+					\Drupal::entityTypeManager()->getStorage('file')->resetCache();		
+					usleep(1000000);				
 				}
 			}
 		}

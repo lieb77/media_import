@@ -6,7 +6,7 @@ use Drupal\exif\ExifFactory;
 use Drupal\Core\Logger\LoggerChannelInterface;
 use GuzzleHttp\ClientInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
-
+use Drupal\taxonomy\Entity\Term;
 
 /**
  * Use the exif module to extract geo data from an image file
@@ -38,12 +38,12 @@ class GeoTag {
 	* @param $filePath : full path to the image file
 	*/
 	public function process($filePath) {
-		
+
 		// Get the metadat
 		$metadata = $this->reader->readMetadataTags($filePath);
 
 		// Get the date from the exif array
-		if(!empty($metadata['exif'])){
+		if(!empty($metadata['exif']) && !empty($metadata['exif']['datetimeoriginal']) ){
 			$date = $metadata['exif']['datetimeoriginal'];	
 		}
 
@@ -104,7 +104,7 @@ class GeoTag {
 		}
 	}
 	
-	/**
+/**
 	 * Get existing term or create a new one
 	 *
 	 */
@@ -116,13 +116,13 @@ class GeoTag {
 			->condition('vid', $vid)
 			->condition('parent', $parent_tid) // Ensure we find the right one (e.g., "Orange" in CA vs "Orange" in NSW)
 			->accessCheck(FALSE);
-		
+
 		$tids = $query->execute();
-		
+
 		if (!empty($tids)) {
 			return reset($tids);
 		}
-		
+
 		$term = Term::create([
 			'name' => $name,
 			'vid' => $vid,
@@ -131,6 +131,6 @@ class GeoTag {
 		$term->save();
 		return $term->id();
 	}
-	
+
 
 }

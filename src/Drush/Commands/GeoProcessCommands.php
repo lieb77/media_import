@@ -21,12 +21,26 @@ class GeoProcessCommands extends DrushCommands {
 	* @command geo:process
 	* @aliases gp
 	*/
-	public function process() {
+	public function process($options = ['limit' => NULL]) {
+  		$limit = $options['limit'];
+  		
 		$storage = $this->entityTypeManager->getStorage('media');
-		$ids = $storage->getQuery()
+		$query = $storage->getQuery()
 			->condition('bundle', 'image')
-			->accessCheck(FALSE)
-			->execute();
+			->accessCheck(FALSE);
+		
+		// We only want images where latitude hasn't been set yet.
+  		$or_group = $query->orConditionGroup()
+    		->condition('field_taken', '', '=')
+    		->notExists('field_taken');
+		$query->condition($or_group);
+		
+		// Apply the limit if provided.
+		if ($limit && is_numeric($limit)) {
+			$query->range(0, $limit);
+		}
+		
+		$ids = $query->execute();		
 		
 		$this->output()->writeln(dt('Processing @count images...', ['@count' => count($ids)]));
 		
